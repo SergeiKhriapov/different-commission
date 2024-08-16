@@ -30,11 +30,17 @@ fun calculateCommission(
     }
     return when (cardType) {
         "Mastercard" -> {
-            if (monthlyTransfers + transferAmount <= noCommissionMastercardMonthlyLimit) {
-                0.0
-            } else {
-                val excessAmount = transferAmount - noCommissionMastercardMonthlyLimit
-                excessAmount * mastercardCommissionRate + mastercardCommissionFlatFee
+            when {
+                monthlyTransfers > noCommissionMastercardMonthlyLimit -> {
+                    transferAmount * mastercardCommissionRate + mastercardCommissionFlatFee
+                }
+
+                monthlyTransfers + transferAmount > noCommissionMastercardMonthlyLimit -> {
+                    val excessAmount = transferAmount - (noCommissionMastercardMonthlyLimit - monthlyTransfers)
+                    excessAmount * mastercardCommissionRate + mastercardCommissionFlatFee
+                }
+
+                else -> 0.0
             }
         }
 
